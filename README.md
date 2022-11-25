@@ -1,37 +1,37 @@
-# 2d-polygon-boolean
+# 2d-polygon-boolean-lua
 
-Port Lua de l'implementation Javascript de l'algorihm de Greiner-Hormann "[efficient clipping of arbitrary polygons](http://www.inf.usi.ch/hormann/papers/Greiner.1998.ECO.pdf)" réalisé par [tmpvar](https://github.com/tmpvar). Lien du repository d'origine [ici](https://github.com/tmpvar/2d-polygon-boolean).
+Port Lua of the Javascript implementation of the Greiner-Hormann algorithm taken from the paper "[efficient clipping of arbitrary polygons](http://www.inf.usi.ch/hormann/papers/Greiner.1998.ECO.pdf)" made by [tmpvar](https://github.com/tmpvar). Original repository link [here](https://github.com/tmpvar/2d-polygon-boolean).
 
 ## Use
 
-Ce module s'importe comme ceci:
+This module is imported like this:
 
 ```lua
 local polygonBoolean = require("2d-polygon-boolean")
 ```
 
-Les polygons donnés en paramètre doivent être représentés par des tables construites ainsi:
+The polygons given as a parameter must be represented by tables constructed as follows:
 
 ```lua
 polygon = { x1,y1, x2,y2, x3,y3, ... }
 ```
 
-Et la fonction doit être appelé comme ceci:
+And the function should be called like this:
 
 ```lua
 polygons = polygonBoolean(polygon_subject, polygon_clip, operation, get_most_revelant)
 ```
 
-`polygon_subject` est le polygon sujet de l'operation.
-`polygon_clip` est le polygon qui fera subir l'operation.
+`polygon_subject` is the subject polygon of the operation.
+`polygon_clip` is the polygon that will perform the operation.
 
-`operation` est une valeur chaine de caractère qui peut être:
->`or` : pour effectuer une union des polygones.
-`not` : pour effectuer une exclusion de la partie chevauchante sur le polygone sujet.
-`and` : pour ne garder que que la partie chevauchante.
+`operation` is a string value which can be:
+>`or` : to perform a union of the polygons.
+`not` : to perform an overlapping exclusion on the subject polygon.
+`and` : to keep only the overlapping part.
 >
 
-`get_most_revelant` sert à ne garder que le resultat le plus pertinent. Par defaut ce paramètre est sur faux et donc la fonction retourne une table de plusieurs polygones (qu'une intersection a été trouvé ou non) comme ceci:
+`get_most_revelant` is used to keep only the most relevant result. By default this parameter is false and therefore the function returns a table of several polygons (whether an intersection was found or not) like this:
 ```lua
 {
     { x1,y1, x2,y2, x3,y3, ... },
@@ -39,9 +39,9 @@ polygons = polygonBoolean(polygon_subject, polygon_clip, operation, get_most_rev
     ...
 }
 ```
-Si ce paramètre est vrai et qu'une intersection a été trouvé il renverra le polygones resultant contenant le plus de sommets (est pertinent dans la plupars des cas mais peut ne pas l'être dans certains rare cas comme avec l'exclusion) ou renvoie `false, polygones` dans le cas où aucune intersection n'a été trouvé entre le polygone sujet et le polygon clip.
+If this parameter is true and an intersection was found it will return the resulting polygon containing the most vertices (is relevant in most cases but may not be in some rare cases like with exclusion) or returns `false, polygons` in case no intersection was found between the subject polygon and the clip polygon.
 
-### Exemple complet
+### Complete example
 
 ```lua
 
