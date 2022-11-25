@@ -147,9 +147,9 @@ polygons = polygonBoolean(polygon_subject, polygon_clip, operation, get_most_rev
 `polygon_clip` is the polygon that will perform the operation.
 
 `operation` is a string value which can be:
->`or` : to perform a union of the polygons.
->`not` : to perform an overlapping exclusion on the subject polygon.
->`and` : to keep only the overlapping part.
+>`or` : to perform a union of the polygons. \
+`not` : to perform an overlapping exclusion on the subject polygon. \
+`and` : to keep only the overlapping part. 
 
 `get_most_revelant` is used to keep only the most relevant result. By default this parameter is false and therefore the function returns a table of several polygons (whether an intersection was found or not) like this:
 ```lua
