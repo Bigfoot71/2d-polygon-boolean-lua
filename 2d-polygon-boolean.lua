@@ -1,3 +1,35 @@
+local function sign(x)
+    if x>0 then return 1
+    elseif x<0 then return -1
+    else return 0 end
+end
+
+local function push(tab,tab2)
+    for i = 1, #tab2 do
+        tab[#tab+1] = tab2[i]
+    end
+end
+
+local function unshift(tab,tab2)
+    for i,v in ipairs(tab2) do
+        table.insert(tab,i,v)
+    end
+end
+
+local function reverse(tab)
+    local len = #tab
+    local rt = {}
+    for i,v in ipairs(tab) do
+        rt[len-i+1] = v
+    end
+    tab = rt
+end
+
+local function copy(tab)
+    return {unpack(tab)}
+end
+
+
 local Node = {}
 Node.__index = Node
 function Node:new(x,y,alpha,intersection)
@@ -61,6 +93,80 @@ function Node:insertBetween(first, last)
     self.next.prev = self
 end
 
+local function createList(p)
+
+    local len = #p
+    local ret, where
+
+    for i = 1, len-1, 2 do
+
+        if not ret then
+            where = Node:new(p[i],p[i+1])
+            ret = where
+        else
+            where.next = Node:new(p[i],p[i+1])
+            where.next.prev = where
+            where = where.next
+        end
+
+    end
+
+    return ret
+
+end
+
+local function clean(verts)
+    for i = #verts-2, 1, -2 do
+        if verts[i-1] == verts[i+1]
+        and verts[i] == verts[i+2]
+        then
+            table.remove(verts, i+1)
+            table.remove(verts, i)
+        end
+    end
+    return verts
+end
+
+
+local function lineCross(x1,y1,x2,y2,x3,y3,x4,y4)
+
+    local a1 = y2 - y1
+    local b1 = x1 - x2
+    local c1 = x2 * y1 - x1 * y2
+
+    local r3 = a1 * x3 + b1 * y3 + c1
+    local r4 = a1 * x4 + b1 * y4 + c1
+
+    if r3 ~= 0 and r4 ~= 0 and ((r3 >= 0 and r4 >= 0) or (r3 < 0 and r4 < 0)) then
+        return
+    end
+
+    local a2 = y4 - y3
+    local b2 = x3 - x4
+    local c2 = x4 * y3 - x3 * y4
+
+    local r1 = a2 * x1 + b2 * y1 + c2
+    local r2 = a2 * x2 + b2 * y2 + c2
+
+    if r1 ~= 0 and r2 ~= 0 and ((r1 >= 0 and r2 >= 0) or (r1 < 0 and r2 < 0)) then
+        return
+    end
+
+    local denom = a1 * b2 - a2 * b1
+
+    if denom == 0 then
+        return true
+    end
+
+    --offset = denom < 0 and - denom / 2 or denom / 2
+
+    local x = b1 * c2 - b2 * c1
+    local y = a2 * c1 - a1 * c2
+
+    return x~=0 and x/denom or x,
+           y~=0 and y/denom or y
+
+end
 
 local function pointContain(x,y,p)
 
@@ -108,114 +214,10 @@ local function area(p)
 
 end
 
-local function sign(x)
-    if x>0 then return 1
-    elseif x<0 then return -1
-    else return 0 end
-end
-
-local function push(tab,tab2)
-    for i = 1, #tab2 do
-        tab[#tab+1] = tab2[i]
-    end
-end
-
-local function unshift(tab,tab2)
-    for i,v in ipairs(tab2) do
-        table.insert(tab,i,v)
-    end
-end
-
-local function reverse(tab)
-    local len = #tab
-    local rt = {}
-    for i,v in ipairs(tab) do
-        rt[len-i+1] = v
-    end
-    tab = rt
-end
-
-local function copy(tab)
-    return {unpack(tab)}
-end
-
-local function lineCross(x1,y1,x2,y2,x3,y3,x4,y4)
-
-    local a1 = y2 - y1
-    local b1 = x1 - x2
-    local c1 = x2 * y1 - x1 * y2
-
-    local r3 = a1 * x3 + b1 * y3 + c1
-    local r4 = a1 * x4 + b1 * y4 + c1
-
-    if r3 ~= 0 and r4 ~= 0 and ((r3 >= 0 and r4 >= 0) or (r3 < 0 and r4 < 0)) then
-        return
-    end
-
-    local a2 = y4 - y3
-    local b2 = x3 - x4
-    local c2 = x4 * y3 - x3 * y4
-
-    local r1 = a2 * x1 + b2 * y1 + c2
-    local r2 = a2 * x2 + b2 * y2 + c2
-
-    if r1 ~= 0 and r2 ~= 0 and ((r1 >= 0 and r2 >= 0) or (r1 < 0 and r2 < 0)) then
-        return
-    end
-
-    local denom = a1 * b2 - a2 * b1
-
-    if denom == 0 then
-        return true
-    end
-
-    --offset = denom < 0 and - denom / 2 or denom / 2
-
-    local x = b1 * c2 - b2 * c1
-    local y = a2 * c1 - a1 * c2
-
-    return x~=0 and x/denom or x,
-           y~=0 and y/denom or y
-
-end
-
-local function createList(p)
-
-    local len = #p
-    local ret, where
-
-    for i = 1, len-1, 2 do
-
-        if not ret then
-            where = Node:new(p[i],p[i+1])
-            ret = where
-        else
-            where.next = Node:new(p[i],p[i+1])
-            where.next.prev = where
-            where = where.next
-        end
-
-    end
-
-    return ret
-
-end
-
-local function cleanList(array)
-    for i = #array-3, 1, -2 do
-        if array[i+2] == array[i]
-        or array[i+3] == array[i+1]
-        then
-            table.remove(array, i+1)
-            table.remove(array, i)
-        end
-    end
-    return array
-end
-
 local function distance(x1,y1,x2,y2)
-return math.sqrt((x1-x2)^2+(y1-y2)^2)
+    return math.sqrt((x1-x2)^2+(y1-y2)^2)
 end
+
 
 local function identifyIntersections(subjectList, clipList)
 
@@ -274,8 +276,6 @@ end
 
 local function identifyIntersectionType(subjectList, clipList, clipPoly, subjectPoly, type)
 
-    local subject, clip
-
     local se = pointContain(subjectList.x, subjectList.y, clipPoly)
     if (type == 'and') then se = not se end
 
@@ -301,6 +301,7 @@ local function identifyIntersectionType(subjectList, clipList, clipPoly, subject
     end
 
 end
+
 
 local function collectClipResults(subjectList, clipList, getMostRevelant)
 
@@ -345,7 +346,7 @@ local function collectClipResults(subjectList, clipList, getMostRevelant)
 
         end
 
-        results[#results+1] = cleanList(result)
+        results[#results+1] = clean(result)
 
     end
 
@@ -364,20 +365,12 @@ local function collectClipResults(subjectList, clipList, getMostRevelant)
 
         res = results[index]
 
-    --[[
-        for _, r in ipairs(results) do
-            for i = 1, #r-1, 2 do
-                res[#res+1] = r[i]
-                res[#res+1] = r[i+1]
-            end
-        end
-    ]]
-
     end
 
     return res or results
 
 end
+
 
 local function polygonBoolean(subjectPoly, clipPoly, operation, getMostRevelant)
 
