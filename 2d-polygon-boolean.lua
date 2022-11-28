@@ -398,8 +398,8 @@ local function polygonBoolean(subjectPoly, clipPoly, operation, getMostRevelant)
     else
         -- No intersections
 
-        local inner = pointContain(subjectPoly[1], clipPoly)
-        local outer = pointContain(clipPoly[1], subjectPoly)
+        local inner = pointContain(subjectPoly[1], subjectPoly[2], clipPoly)
+        local outer = pointContain(clipPoly[1], clipPoly[2], subjectPoly)
 
         local res = {}
 
